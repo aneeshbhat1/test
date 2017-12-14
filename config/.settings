@@ -1,0 +1,17 @@
+{
+    "projectName": "SprintQATest",
+    "username": "parthiban.sudhaman@ef.com.lang.sprintqa",
+    "id": "7ea5b4d0-e0b9-11e7-a753-23dfb4739ac5",
+    "namespace": "",
+    "orgType": "developer",
+    "loginUrl": "https://login.salesforce.com/",
+    "instanceUrl": "https://ef--SprintQA.cs88.my.salesforce.com",
+    "workspace": "C:\\Users\\Parthi\\Documents",
+    "subscription": [
+        "ApexClass",
+        "ApexComponent",
+        "ApexPage",
+        "ApexTrigger",
+        "StaticResource"
+    ]
+}
