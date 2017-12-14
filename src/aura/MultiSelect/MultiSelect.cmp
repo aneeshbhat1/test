@@ -1,0 +1,28 @@
+<aura:component >
+
+  <aura:attribute name="options" type="String[]"/>
+  <aura:attribute name="options_internal" type="object[]" access="private"/>
+  <aura:attribute name="selectedItems" type="String[]" />
+  <aura:attribute name="infoText" type="String" default="Select an option..." />
+  <aura:attribute name="width" type="String" default="240px;" />
+  <aura:attribute name="dropdownLength" type="Integer" default="5" />
+<!--<aura:registerEvent name="selectChange" type="c:SelectChange" />-->
+  <aura:handler name="change" value="{!v.options}" action="{!c.onOptionsSet}"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+  <div aura:id="main-div"  class=" slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click ">
+    <button class="slds-button slds-button--neutral slds-picklist__label" style="{!'width:' + v.width }" aria-haspopup="true" onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}">
+      <span class="slds-truncate" title="{!v.infoText}">{!v.infoText}</span>
+      <lightning:icon iconName="utility:down" size="medium" class="slds-icon" />
+    </button>
+    <div class="slds-dropdown slds-dropdown--left" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+      <ul class="{!'slds-dropdown__list slds-dropdown--length-' + v.dropdownLength}" role="menu">
+        <aura:iteration items="{!v.options_internal}" var="option" indexVar="i">
+            <div class="slds-form-element slds-p-around_xx-small">
+                <lightning:input type="checkbox" label="{!option.label}" checked="{!option.isSelected}" onchange="{!c.handleSelection}"/>
+            </div>
+        </aura:iteration>
+      </ul>
+    </div>
+  </div>
+</aura:component>

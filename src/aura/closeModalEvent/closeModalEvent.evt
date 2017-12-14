@@ -1,0 +1,6 @@
+<!--
+ - Created by aneesh.bhat on 06-Sep-17.
+ -->
+
+<aura:event type="COMPONENT" description="closeModalEvent">
+</aura:event>

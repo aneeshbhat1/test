@@ -1,0 +1,285 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+        controller="RecurrenceCampaignController">
+    <ltng:require scripts="{!join(',',
+            $Resource.MomentMinRecur + '/moment.min.js',
+            $Resource.MomentMinRecur + '/moment-recur.js')}" afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+    <aura:attribute name="isDailyChecked" type="Boolean" default="true"/>
+    <aura:attribute name="isWeeklyChecked" type="Boolean" default="false"/>
+    <aura:attribute name="isMonthlyChecked" type="Boolean" default="false"/>
+    <aura:attribute name="isYearlyChecked" type="Boolean" default="false"/>
+    <aura:attribute name="StartDate" type="Datetime"/>
+    <aura:attribute name="endDate" type="Datetime"/>
+    <aura:attribute name="days" type="Integer[]"
+                    default="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30"/>
+    <aura:attribute name="months" type="String[]"
+                    default="January,February,March,April,May,June,July,August,September,October,November,December"/>
+    <aura:attribute name="daysOfWeek" type="object[]"/>
+    <aura:attribute name="daysOfWeekNames" type="String[]" default="Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday"/>
+    <aura:attribute name="FirstFourDays" type="String[]"  default="First,Second,Third,Fourth,Last"/>
+    <aura:attribute name="WhenForMonth" type="Integer[]"
+                    default="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31"/>
+    <aura:attribute name="selectedRepeatPattern" type="String"/>
+    <aura:attribute name="isCustomPatternSelected" type="Boolean"/>
+    <aura:attribute name="isRelativeForMonthlySelected" type="Boolean"/>
+    <aura:attribute name="isRelativeForYearlySelected" type="Boolean"/>
+    <aura:attribute name="forEvery" type="String"/>
+    <aura:attribute name="isComponentContentVisible" type="Boolean"/>
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="showMessage" type="Boolean"/>
+    <aura:attribute name="messageType" type="String"/>
+    <aura:attribute name="messageTitle" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    <aura:handler name="closeModalEvent" event="c:closeModalEvent"
+                  action="{!c.onModalCloseClicked}"/>
+    <aura:handler name="modalSubmitClickEvent" event="c:modalSubmitClickedEvent"
+                  action="{!c.saveRecurence}"/>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                    <lightning:icon iconName="standard:campaign" size="medium"/>
+                </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2>
+                        <span class="slds-text-heading_small">Create recurring Campaigns</span>
+                    </h2>
+                </div>
+            </header>
+            <div class="slds-no-flex">
+                <button class="slds-button slds-button_neutral" onclick="{!c.onComponentShowClicked}">Create</button>
+            </div>
+        </div>
+    </article>
+    <aura:renderIf isTrue="{!v.isComponentContentVisible}">
+     <c:Modal buttonContent="Create" Title="Create recurrence">
+     <aura:set attribute="content">
+     <aura:renderIf isTrue="{!v.showMessage}">
+      <ui:message title="{!v.messageTitle}" severity="{!v.messageType}" closable="true">{!v.message}</ui:message>
+     </aura:renderIf>
+        <div class="slds-m-around_small">
+            <fieldset class="slds-form-element">
+                <legend class="slds-form-element__legend slds-form-element__label">Frequency</legend>
+                <div class="slds-form-element__control">
+                    <div class="slds-radio_button-group">
+                      <span class="slds-button slds-radio_button">
+                          <input type="radio" name="radio" id="Daily" checked="{!v.isDailyChecked ? 'checked':''}" aura:id="DailyRadio" onclick="{!c.onRecurrencePatternChanged}"
+                                 value="{!v.isDailyChecked}"/>
+                        <label class="slds-radio_button__label" for="Daily">
+                          <span class="slds-radio_faux">Daily</span>
+                        </label>
+                      </span>
+                      <span class="slds-button slds-radio_button">
+                          <input type="radio" name="radio" id="Weekly" checked="{!v.isWeeklyChecked ? 'checked':''}" aura:id="WeeklyRadio" onchange="{!c.onRecurrencePatternChanged}"/>
+                            <label class="slds-radio_button__label" for="Weekly">
+                              <span class="slds-radio_faux">Weekly</span>
+                            </label>
+                      </span>
+                      <span class="slds-button slds-radio_button">
+                          <input type="radio" name="radio" id="Monthly" checked="{!v.isMonthlyChecked ? 'checked':''}" aura:id="MonthlyRadio" onchange="{!c.onRecurrencePatternChanged}"/>
+                        <label class="slds-radio_button__label" for="Monthly">
+                          <span class="slds-radio_faux">Monthly</span>
+                        </label>
+                      </span>
+                      <span class="slds-button slds-radio_button">
+                          <input type="radio" name="radio" id="Yearly" checked="{!v.isYearlyChecked ? 'checked':''}" aura:id="YearlyRadio" onchange="{!c.onRecurrencePatternChanged}"/>
+                        <label class="slds-radio_button__label" for="Yearly">
+                          <span class="slds-radio_faux">Yearly</span>
+                        </label>
+                      </span>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="slds-m-around_small">
+            <aura:renderIf isTrue="{!v.isDailyChecked}">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-large-size_4-of-4 slds-grid">
+                        <div class="slds-large-size_2-of-4 slds-p-around_xx-small">
+                            <ui:inputSelect multiple="False" aura:id="dailyRepeatPicklist" label="Repeat"
+                                            change="{!c.onRepeatPatternChanged}">
+                                <ui:inputSelectOption text="Every Day" label="Every Day" value="true"/>
+                                <ui:inputSelectOption text="Every other Day" label="Every other Day"/>
+                                <ui:inputSelectOption text="Custom" label="Custom"/>
+                            </ui:inputSelect>
+                        </div>
+                        <aura:renderIf isTrue="{!v.isCustomPatternSelected}">
+                            <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                                <ui:inputSelect multiple="False" aura:id="DailyEveryId" label="Every Day(s)" value="{!v.forEvery}">
+                                    <aura:iteration items="{!v.days}" var="day">
+                                        <ui:inputSelectOption text="{!day}" label="{!day}"/>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </div>
+                        </aura:renderIf>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                </aura:set>
+            </aura:renderIf>
+        </div>
+
+        <div class="slds-m-around_small">
+            <aura:renderIf isTrue="{!v.isWeeklyChecked}">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-large-size_2-of-4 slds-p-around_xx-small">
+                        <ui:inputSelect multiple="False" aura:id="weeklyRepeatPicklist" label="Repeat"
+                                        change="{!c.onRepeatPatternChanged}">
+                            <ui:inputSelectOption text="Every Week" label="Every Week" value="true"/>
+                            <!--<ui:inputSelectOption text="Every other Week" label="Every other Week"/>
+                            <ui:inputSelectOption text="Custom" label="Custom"/>-->
+                        </ui:inputSelect>
+                    </div>
+                    <aura:renderIf isTrue="{!v.isCustomPatternSelected}">
+                        <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                            <ui:inputSelect multiple="False" aura:id="EveryPicId" label="Every Week(s)" value="{!v.forEvery}">
+                                <aura:iteration items="{!v.days}" var="day">
+                                <ui:inputSelectOption text="{!day}" label="{!day}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                    </aura:renderIf>
+                    <div class="slds-large-size_4-of-4 slds-p-around_xx-small">
+                        <fieldset class="slds-form-element">
+                            <legend class="slds-form-element__legend slds-form-element__label"> Repeat On</legend>
+                            <div class="slds-form-element__control">
+                                <div class="slds-checkbox_button-group">
+                                    <aura:iteration items="{!v.daysOfWeek}" var="weekDay">
+                                      <span class="slds-button slds-checkbox_button">
+                                          <input type="checkbox" id="{!weekDay.Name}" name="checkbox"
+                                                 onclick="{!c.onWeekDayPatternChanged}" checked="{!weekDay.IsSelected}"
+                                                 value="{!weekDay.IsSelected}"/>
+                                        <label class="slds-checkbox_button__label" for="{!weekDay.Name}">
+                                          <span class="slds-checkbox_faux">{!weekDay.Name}</span>
+                                        </label>
+                                      </span>
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                </aura:set>
+            </aura:renderIf>
+        </div>
+
+        <div class="slds-m-around_small">
+            <aura:renderIf isTrue="{!v.isMonthlyChecked}">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-large-size_2-of-4 slds-p-around_xx-small">
+                        <ui:inputSelect multiple="False" aura:id="monthlyRepeatPicklist" label="Repeat" change="{!c.onRepeatPatternChanged}">
+                            <ui:inputSelectOption text="Every Month" label="Every Month" value="true"/>
+                            <!--<ui:inputSelectOption text="Every other Month" label="Every other Month"/>
+                            <ui:inputSelectOption text="Custom" label="Custom"/>-->
+                        </ui:inputSelect>
+                    </div>
+                        <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                            <aura:renderIf isTrue="{!v.isCustomPatternSelected}">
+                                <ui:inputSelect multiple="False" aura:id="EveryPicId" label="Every Month(s)" value="{!v.forEvery}">
+                                <aura:iteration items="{!v.days}" var="day">
+                                <ui:inputSelectOption text="{!day}" label="{!day}"/>
+                                </aura:iteration>
+                                </ui:inputSelect>
+                            </aura:renderIf>
+                        </div>
+                    <div class="slds-large-size_1-of-4 slds-p-around_xx-small"></div>
+                    <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                        <ui:inputSelect multiple="False" aura:id="whenMonthlyDropdown" label="When"
+                                        change="{!c.onRepeatPatternChanged}">
+                            <ui:inputSelectOption text="Specific Days" label="Specific Days" value="true"/>
+                            <ui:inputSelectOption text="Relative Days" label="Relative Days"/>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                        <aura:renderIf isTrue="{!v.isRelativeForMonthlySelected}">
+                            <ui:inputSelect multiple="False" aura:id="monthlyWhichWeekId" label="Day" change="{!c.onRepeatPatternChanged}">
+                                <aura:iteration items="{!v.FirstFourDays}" var="FirstFourDays">
+                                    <ui:inputSelectOption text="{!FirstFourDays}" label="{!FirstFourDays}" />
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            <aura:set attribute="else">
+                                <ui:inputSelect multiple="False" aura:id="monthlyDayId" label="Day">
+                                    <aura:iteration items="{!v.WhenForMonth}" var="WhenForMonth">
+                                        <ui:inputSelectOption text="{!WhenForMonth}" label="{!WhenForMonth}"/>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                            </aura:set>
+                        </aura:renderIf>
+                    </div>
+                    <aura:renderIf isTrue="{!v.isRelativeForMonthlySelected}">
+                        <div class="slds-large-size_1-of-4 slds-p-around_xx-small">
+                            <ui:inputSelect multiple="False" aura:id="monthlyRepeatWeekId" label="Repeat On">
+                                <aura:iteration items="{!v.daysOfWeekNames}" var="weekDay">
+                                    <ui:inputSelectOption text="{!weekDay}" label="{!weekDay}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                    </aura:renderIf>
+                </div>
+                <aura:set attribute="else">
+                </aura:set>
+            </aura:renderIf>
+        </div>
+
+        <div class="slds-m-around_small">
+            <aura:renderIf isTrue="{!v.isYearlyChecked}">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-large-size_2-of-4 slds-p-around_xx-small">
+                        <ui:inputSelect multiple="False" aura:id="yearlyRepeatPicklist" label="When" change="{!c.onRepeatPatternChanged}">
+                            <ui:inputSelectOption text="Specific Date" label="Specific Date" value="true"/>
+                            <ui:inputSelectOption text="Relative Date" label="Relative Date"/>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-large-size_1-of-4 slds-p-around_xx-small"></div>
+                    <aura:renderIf isTrue="{!v.isRelativeForYearlySelected}">
+                        <div class="slds-large-size_1-of-4 slds-p-around_xxx-small">
+                            <ui:inputSelect multiple="False" aura:id="yearlyWhichWeekId" label="Day">
+                                <aura:iteration items="{!v.FirstFourDays}" var="FirstFourDays">
+                                    <ui:inputSelectOption text="{!FirstFourDays}" label="{!FirstFourDays}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <div class="slds-large-size_1-of-4 slds-p-around_xxx-small">
+                            <ui:inputSelect multiple="False" aura:id="yearlyRepeatWeekId" label="Repeat On">
+                                <aura:iteration items="{!v.daysOfWeekNames}" var="weekDay">
+                                    <ui:inputSelectOption text="{!weekDay}" label="{!weekDay}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <div class="slds-large-size_1-of-4 slds-p-around_xxx-small">
+                            <ui:inputSelect multiple="False" aura:id="yearlyRepeatMonthId" label="Month">
+                                <aura:iteration items="{!v.months}" var="months">
+                                    <ui:inputSelectOption text="{!months}" label="{!months}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <aura:set attribute="else">
+                        </aura:set>
+                    </aura:renderIf>
+                </div>
+                <aura:set attribute="else">
+                </aura:set>
+            </aura:renderIf>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-m-around_small">
+            <div class="slds-large-size_1-of-3 slds-p-around_xx-small">
+                <ui:inputDate displayDatePicker="true" aura:id="StartDate" label="Start Date" value="{!v.StartDate}" required="true"/>
+            </div>
+            <div class="slds-large-size_1-of-3 slds-p-around_xx-small">
+                <ui:inputDate displayDatePicker="True" aura:id="EndDate" label="End Date" value="{!v.endDate}" required="true"/>
+            </div>
+        </div>
+            </aura:set>
+        </c:Modal>
+    </aura:renderIf>
+    <div class="demo-only slds-hide" style="height: 6rem;" aura:id="mySpinner">
+        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+</aura:component>

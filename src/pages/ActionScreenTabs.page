@@ -1,0 +1,68 @@
+<apex:page sidebar="false" showHeader="false" docType="html-4.01-strict">
+    <apex:includeLightning />
+
+    <style>
+        .noselect {
+          -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Chrome/Safari/Opera */
+             -khtml-user-select: none; /* Konqueror */
+               -moz-user-select: none; /* Firefox */
+                -ms-user-select: none; /* Internet Explorer/Edge */
+                    user-select: none; /* Non-prefixed version, currently
+                                          not supported by any browser */
+        }
+        
+        .k-grouping-header{
+        	display: none;
+        }
+    </style>
+
+    <div id="tabstrip" class="noselect" style="display:none;">
+        <ul>
+            <li class="k-state-active">Opportunities</li>
+            <li>Leads</li>
+        </ul>
+    <!-- Opportunities -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Opportunity" DelayLoad="false"  ViewID="a5I9E00000006zWUAQ"
+            EnableNewButton="true"  EnableNewInline="true"  EnableEdit="true"  EnableActions="true"  EnableFieldChooser="true"
+            EnableStickyViews="true"  EnableToolbar="true"  EnableViews="true"  EnableFormatting="true"  EnableReadingPane="true" />
+            <CRMC_PP:DrillUp />
+        </div>
+
+    <!-- Leads -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Lead" DelayLoad="true"  ViewID="a5I9E00000006zYUAQ"
+            EnableNewButton="true"  EnableNewInline="true"  EnableEdit="true"  EnableActions="true"  EnableFieldChooser="true"
+            EnableStickyViews="true"  EnableToolbar="true"  EnableViews="true"  EnableFormatting="true"  EnableReadingPane="true" />
+            <CRMC_PP:DrillUp />
+        </div>
+
+    </div>
+    <script>
+    $(document).ready(function() {
+        $("#tabstrip").kendoTabStrip({
+          activate: function(e){
+            setTimeout(function(){
+                $(window).resize();
+            });
+          }
+        });
+        $("#tabstrip").css("display", "block");
+        $("#tabstrip").find('ul').first().append('<li class="k-item k-state-default k-last" style="vertical-align: bottom; padding-left: 200px"><div id="myProductivity"></div></li>');
+        $Lightning.use("c:MyProductivityOutApp",    // name of the Lightning app
+                function() {                  // Callback once framework and app loaded
+                    $Lightning.createComponent(
+                            "c:MyProductivity", // top-level component of your app
+                            { },                  // attributes to set on the component when created
+                            "myProductivity",   // the DOM location to insert the component
+                            function(cmp) {
+                                // callback when component is created and active on the page
+                            }
+                    );
+                }
+        );
+    });
+     </script>
+
+</apex:page>

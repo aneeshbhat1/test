@@ -1,0 +1,891 @@
+<apex:page controller="EditStartEndDateController" sidebar="false" title="StartDate" standardStylesheets="false" docType="html-5.0" showHeader="false">
+
+    <html ng-app="calendarDemoApp">
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/application.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/angular-material.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/assetStyles.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/products.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/collaboration-notify.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/font-awesome.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/select.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/dynamicFieldStyles.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/ui-grid.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/grid-cart.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/costProfitabilityStyles.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/assets/stylesheets/rzslider.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__vendor, '/lib/angular.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__vendor, '/lib/angular-ui-router.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__vendor, '/lib/angular-messages.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__vendor, '/lib/dirPagination.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__ngCPQ, '/aptCPQUI/controllers/paginationControlsCtrl.js')}" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.js"></script>
+    <apex:stylesheet value="/resource/Angular_Calendar/bootstrap/css/bootstrap.css" />
+    <apex:stylesheet value="/resource/Angular_Calendar/calendar.css" />
+    <apex:stylesheet value="/resource/Angular_Calendar/custom.css" />
+    <apex:includeScript value="/resource/Angular_Calendar/angular.min.js" />
+    <apex:includeScript value="/resource/Angular_Calendar/calendarDemoCtrl.js" />
+    <apex:includeScript value="/resource/Angular_Calendar/calendar-tpls.min.js" />
+    <apex:includeScript value="/resource/Angular_Calendar/moment.min.js" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+    var myApp = angular.module('aptCPQUI', []);
+    var app = angular.module('calendarDemoApp', ['ui.rCalendar']);
+    app.directive('numbersOnly', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attr, ngModelCtrl) {
+                function fromUser(text) {
+                    if (text) { 
+                        var transformedInput = text.replace(/[^0-9]/g, '');
+
+                        if (transformedInput !== text) {
+                            ngModelCtrl.$setViewValue(transformedInput);
+                            ngModelCtrl.$render();
+                        }
+                        return transformedInput;
+                    }
+                    return undefined;
+                }
+                ngModelCtrl.$parsers.push(fromUser);
+            }
+        };
+    });
+    angular.module('calendarDemoApp').controller('CalendarDemoCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
+        'use strict';
+        $rootScope.loaderEffect = false;
+        $scope.reloadHoldApp = function() {
+            $scope.quantity = 1;
+            $scope.onClickTimeFired = false;
+            $scope.changeMode = function(mode) {
+                $scope.mode = mode;
+            };
+            $scope.today = function() {
+                $scope.currentDate = new Date();
+            };
+            $scope.isToday = function() {
+                var today = new Date(),
+                    currentCalendarDate = new Date($scope.currentDate);
+
+                today.setHours(0, 0, 0, 0);
+                currentCalendarDate.setHours(0, 0, 0, 0);
+                return today.getTime() === currentCalendarDate.getTime();
+            };
+            $scope.LoadDateConverted = function(data) {
+                if (data != undefined) {
+                    var year = data.getFullYear();
+                    var month = ((data.getMonth() + 1) < 10 ? '0' : '') + (data.getMonth() + 1); // months are zero indexed
+                    var day = (data.getDate() < 10 ? '0' : '') + data.getDate();
+                    $scope.LoadDateConvertedDate = year + '-' + month + '-' + day;
+                    return $scope.LoadDateConvertedDate;
+                } else {
+                    return false;
+                }
+            }
+            // $scope.loadEvents = function() {
+            //      $scope.eventSource = $rootScope.collectionJsonArr;
+            //         console.log($scope.eventSource);
+            //         $rootScope.preferDate = $scope.eventSource == "" || null || undefined || 'NaN-NaN-NaN' ? false : new Date($scope.preferDateFinder($scope.eventSource).toString());
+            //         $rootScope.preferDateFormatted = $scope.eventSource == "" || null || undefined || 'NaN-NaN-NaN' ? 'Contact Admin' : $scope.LoadDateConverted(new Date($scope.preferDateFinder($scope.eventSource).toString()));
+            // };
+            $scope.parsedRecord = '{!startdateJSONString}';
+            //$scope.parsedRecord = [{"title":"null","startTime":"2017-11-20T00:00:00.000Z","endTime":"2017-11-20T00:00:00.000Z","allDay":false,"prefer":true},{"title":"null","startTime":"2017-10-30T00:00:00.000Z","endTime":"2017-10-30T00:00:00.000Z","allDay":false,"prefer":false},{"title":"null","startTime":"2017-10-16T00:00:00.000Z","endTime":"2017-10-16T00:00:00.000Z","allDay":false,"prefer":false}];
+
+
+            $scope.ivalidCheck = false;
+            $scope.preferDateFinder = function(prefer) {
+                for (var i = 0; i < prefer.length; i++) {
+                    if (prefer[i].prefer == true) {
+                        return prefer[i].startTime;
+                        $scope.ivalidCheck = false
+                    } else {
+                        if ($scope.ivalidCheck == true) {
+                            $scope.ivalidCheck = true;
+                        } else {
+                            $scope.ivalidCheck = false;
+                        }
+                        return false;
+                    }
+                }
+            }
+
+            $rootScope.preferDate = $scope.eventSource == "" || null || undefined || 'NaN-NaN-NaN' ? false : new Date($scope.preferDateFinder($scope.eventSource).toString());
+            $rootScope.preferDateFormatted = $scope.eventSource == "" || null || undefined || 'NaN-NaN-NaN' ? 'Contact Admin' : $scope.LoadDateConverted(new Date($scope.preferDateFinder($scope.eventSource).toString()));
+            $scope.onEventSelected = function(event) {
+                $scope.event = event;
+            };
+
+            $scope.validateStartDate = function(startDate) {
+
+                var validateReturn = false;
+                for (var i = 0; i < $scope.eventSource.length; i++) {
+                    var concatenateDate = $scope.LoadDateConverted(new Date(startDate.toISOString())) + 'T00:00:00.000Z';
+                    if ($scope.eventSource[i].startTime == concatenateDate) {
+                        validateReturn = true
+                    } else {
+                        if (validateReturn == true) {
+                            validateReturn = true
+                        } else {
+                            validateReturn = false;
+                        }
+                    }
+                }
+                if (validateReturn == true) {
+                    return startDate;
+                } else {
+                    $scope.currentDate = $rootScope.preferDateFormatted;
+                    $scope.selectedTime = $rootScope.preferDateFormatted;
+                    return $rootScope.preferDate;
+                }
+
+            }
+            $scope.EndDateValidator = function(qty, startFired) {
+                startFired = (startFired == undefined | null ? $rootScope.preferDate : $scope.validateStartDate(startFired));
+                if (qty == 0 || qty == undefined) { $scope.quantity = 1; }
+                if (parseInt(qty) == 1 && $scope.onClickTimeFired == false) {
+                    var getStartDate = $rootScope.preferDate;
+                    var processStartDate = moment(getStartDate, "DD-MM-YYYY").add(4, 'days');
+                    var E_DAY = processStartDate.format('DD');
+                    var E_MONTH = processStartDate.format('MM');
+                    var E_YEAR = processStartDate.format('YYYY');
+                    $scope.endDateProcessed = ($scope.LoadDateConverted(new Date(processStartDate)) == (undefined || null || '' || 'NaN-NaN-NaN')) ? 'Contact admin' : $scope.LoadDateConverted(new Date(processStartDate));
+                    // $scope.startFormatMoment = $scope.LoadDateConverted($rootScope.preferDate) == false ? $rootScope.preferDateFormatted : $scope.LoadDateConverted($rootScope.preferDate);
+                } else if (parseInt(qty) >= 1) {
+                    var getStartDate = startFired;
+                    var processingDateval = (parseInt(qty - 1) * 7) + 4;
+                    var processStartDate = moment(getStartDate, "DD-MM-YYYY").add(processingDateval, 'days');
+                    var E_DAY = processStartDate.format('DD');
+                    var E_MONTH = processStartDate.format('MM');
+                    var E_YEAR = processStartDate.format('YYYY');
+                    $scope.endDateProcessed = ($scope.LoadDateConverted(new Date(processStartDate)) == (undefined || null || '' || 'NaN-NaN-NaN')) ? 'Contact admin' : $scope.LoadDateConverted(new Date(processStartDate));
+                    // $scope.startFormatMoment = $scope.LoadDateConverted($rootScope.preferDate) == false ? $rootScope.preferDateFormatted : $scope.LoadDateConverted($rootScope.preferDate);
+                }
+            }
+            $scope.onTimeSelected = function(selectedTime, events) {
+                $scope.SelectionValidation = true;
+                $scope.currentDate = selectedTime;
+                selectedTime == undefined ? $scope.onClickTimeFired = false : $scope.onClickTimeFired = true;
+                $scope.onClickTimeFired;
+                $scope.selectedTime = $scope.LoadDateConverted(selectedTime) == false ? $rootScope.preferDateFormatted : $scope.LoadDateConverted(selectedTime);
+                $scope.EndDateValidator($scope.quantity, selectedTime);
+                //console.log('Selected time: ' + selectedTime + ' hasEvents: ' + (events !== undefined && events.length !== 0));
+            };
+
+            $scope.onTimeSelected();
+            $scope.EndDateValidator();
+
+
+
+
+            $scope.cTrig = function(clickedid) {
+                                   debugger;
+                if (document.getElementsByName(clickedid)[0].checked == true) {
+                    opencalander();
+                    $scope.selectedid = clickedid;
+                    setTimeout(function(){ angular.element(document.getElementById('myModal')).scope().$apply(); }, 1000);
+
+                } else {
+                    return false;
+                }
+            }
+            $scope.currentLineItemListString = '{!configLineItemListJSON}';
+            $scope.onchangeQtyAccom = function(data, id) {
+                var qty = id.value;
+                //alert('********The field value is ********'+id.value);
+                //alert('********The field value is ********'+data);
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.EditStartEndDateController.calculateEndDate}', $scope.currentLineItemListString, data, qty,
+                    function(result, event) {
+                         window.location.reload();
+                    }
+                );
+            }
+
+            $scope.onchangeStartDate = function(data, id) {
+                var qty = id.value;
+                //alert('********The field value is ********'+id.value);
+                //alert('********The field value is ********'+data);
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.EditStartEndDateController.calculateEndDateForStartDate}', $scope.currentLineItemListString, data, qty,
+                    function(result, event) {
+                         window.location.reload();
+                    }
+                );
+            }
+            
+            $scope.onchangeEndDate = function(data, id) {
+                var qty = id.value;
+                //alert('********The field value is ********'+id.value);
+                //alert('********The field value is ********'+data);
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.EditStartEndDateController.UpdateEndDateForAccommodation}', $scope.currentLineItemListString, data, qty,
+                    function(result, event) {
+                         window.location.reload();
+                    }
+                );
+            }
+            
+
+            $scope.backToCart = function() {
+                validateCart();
+                //repriceBeforeRedirect();
+            }
+
+
+              $scope.saveAccomDationDetails = function() {
+                    window.location.reload();
+                 }
+
+
+            $scope.cartId = '{!configId2}';
+            $scope.configReqId = '{!configRequestId}';
+            $scope.submit = function() {
+                // Loader---
+                $rootScope.loaderEffect = true;
+                $scope.s_startDate = $scope.selectedTime;
+
+                $scope.s_endDate = $scope.endDateProcessed;
+                $scope.s_quantity = $scope.quantity;
+                var submitDate = {};
+                submitDate['startDate'] = $scope.s_startDate;
+                submitDate['endDate'] = $scope.s_endDate;
+                submitDate['quantity'] = $scope.s_quantity;
+                var startdate = $scope.s_startDate;
+                var endDate = $scope.s_endDate;
+                var quantity = $scope.s_quantity;
+                var currentLineitem = $scope.currentLineItemString;
+                var currentLineitemList = $scope.currentLineItemListString;
+                var configId = $scope.cartId;
+                var configReqId = $scope.configReqId;
+
+                console.log(submitDate);
+                //alert(window.location.href);
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.EditStartEndDateController.updateStartDate}', startdate, endDate, quantity, currentLineitem, currentLineitemList, configId, configReqId,
+                    function(result, event) {
+                        // Hide Loader
+                        $rootScope.loaderEffect = false;
+                        window.location.reload();
+                        //$scope.contacts = result;
+                        // $scope.$apply();
+                    });
+            }
+
+        }
+        $scope.reloadHoldApp();
+        $scope.reloadFilteredValue = function(data, currentItem) {
+            $scope.currentLineItemString = currentItem;
+            console.log($scope.currentLineItemString);
+            $scope.parsedRecord = data;
+            if ($scope.parsedRecord == '' | null | undefined) {
+                $scope.parsedRecord = [];
+            }
+            $scope.parsedRecord = $scope.parsedRecord == '' | null | undefined ? [] : JSON.parse($scope.parsedRecord);
+            $rootScope.collectionJsonArr = [];
+            for (var i = 0; i < $scope.parsedRecord.length; i++) {
+                var jsonData = {};
+                jsonData["title"] = "null";
+                jsonData["startTime"] = $scope.parsedRecord[i].StartDate__c + 'T00:00:00.000Z';
+                jsonData["endTime"] = $scope.parsedRecord[i].StartDate__c + 'T00:00:00.000Z';
+                jsonData["allDay"] = false;
+                jsonData["prefer"] = $scope.parsedRecord[i].Is_Preferred__c;
+                $rootScope.collectionJsonArr.push(jsonData);
+                $scope.onTimeSelected();
+            }
+            console.log($scope.collectionJsonArr);
+            $scope.eventSource = $rootScope.collectionJsonArr;
+            $rootScope.preferDate = $scope.eventSource.length > 0 ? new Date($scope.preferDateFinder($rootScope.collectionJsonArr).toString()) : false;
+            $rootScope.preferDateFormatted = $scope.eventSource.length > 0 ? $scope.LoadDateConverted(new Date($scope.preferDateFinder($rootScope.collectionJsonArr).toString())) : 'Contact Admin';
+            $scope.selectedTime = $scope.LoadDateConverted($rootScope.preferDate) == false ? $rootScope.preferDateFormatted : $scope.LoadDateConverted($rootScope.preferDate);
+            $scope.EndDateValidator($scope.quantity);
+
+            if (document.getElementsByName($scope.selectedid)[0].checked == true) {
+                $('#myModal').modal('show');
+                $scope.loadEvents();
+                return true;
+            } else {
+                $('#myModal').modal('hide');
+                return false;
+            }
+        }
+
+        function showFunction() {
+            var x = document.getElementById('popDiv');
+            if (x.style.display == 'none') {
+                $('#myModal').modal('show');
+                x.style.display = 'block';
+            }
+        }
+
+        function hideFunction() {
+            var x = document.getElementById('popDiv');
+            if (x.style.display == 'block') {
+                $('#myModal').modal('hide');
+                x.style.display = 'none';
+            }
+        }
+
+        function applyFunction() {
+            associate();
+            var x = document.getElementById('popDiv');
+            if (x.style.display == 'block') {
+                $('#myModal').modal('hide');
+                x.style.display = 'none';
+            }
+            //location.reload(true);
+        }
+
+        //Added method for repricing the cart
+        function validateCart(){
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.EditStartEndDateController.validateCart}','{!currentRecordId}',
+                function(result, event) {
+                    if(event.status) {
+                        repriceBeforeRedirect();                                                                
+                    } else {
+                        console.log(event);
+                    }
+                }
+            );
+        }
+        
+        //Added method for repricing the cart
+        function repriceBeforeRedirect(){
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.EditStartEndDateController.RepriceCart}','{!currentRecordId}',
+                function(result, event) {
+                    if(event.status) {
+                        console.log('Redirect before Reprice Result : ' + (!result));
+                        if(result) {
+                            repriceBeforeRedirect();
+                        }
+                        else {
+                            window.location = '{!backCartUrl}';
+                        }                                                                 
+                    } else {
+                        console.log(event);
+                    }
+                }
+            );
+        }
+        
+        $(document).ready(function() {
+            var checkboxes = $("input[type='checkbox']"),
+                actions = $("#AssignSiteBt");
+            checkboxes.click(function() {
+                actions.attr("hidden", !checkboxes.is(":checked"));
+
+            });
+
+        });
+
+        function cTrig(clickedid) {
+            debugger;
+            if (document.getElementsByName(clickedid)[0].checked == true) {
+                 opencalander();
+                $('#myModal').modal('show');
+                setTimeout(function(){ angular.element(document.getElementById('myModal')).scope().$apply(); }, 1000);
+                return true;
+            } else {
+                $('#myModal').modal('hide');
+                 $scope.$apply();
+                return false;
+            }
+        }
+
+
+
+        $(document).ready(function() {
+            $('#myModal').modal('hide');
+            // if ($("#validateInput")){
+
+            // } else {
+            //    $("tbody .columnType").parents('tr').addClass('Failed');
+            // }
+            // $("#validateInput").find("input").each(function(){
+            //              $(this).addClass("asagasgag");
+            //          });
+
+
+            // $('.main-cart-container').each(function(i, obj) {
+            //     debugger;
+            //     if (obj.children.length == 0) {
+            //         $(this).addClass("selectedTab").css("border", "1px solid red");
+            //     }
+            // });
+
+            $("#tb1 tbody tr").each(function() {
+            //get the value of the table cell located
+            //in the third column of the current row
+            var valueOfCell = $(this).find("td:first-child .columnType").has('input');
+            var valueOfCellDest = $(this).find(".columnType span").text();
+            //check if its greater than zero
+            if (valueOfCell.prevObject[0].children.length > 0){
+                //$('td:contains("male")')
+               if( valueOfCell[0].childNodes[0].nodeName == 'INPUT'){
+                 //$(this).addClass("selectedTab_highlight");
+                 //.css("font-weight", "bold");
+                }
+            }else{
+                if(valueOfCellDest.includes('Destination')){
+                    $(this).addClass("selectedTab_highlight");
+                }
+            }
+
+            });
+
+        });
+    }]);
+    </script>
+
+    <body ng-app="calendarDemoApp" ng-controller="CalendarDemoCtrl">
+        <div ng-hide="loaderEffect == false" class="loadingEffect">Loading&#8230;</div>
+    <!--  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button> -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <!-- <h4 class="modal-title">Modal Header</h4> -->
+                </div>
+                <div class="modal-body">
+                    <section class="zCalender col-md-12" >
+                        <div class="col-md-12">
+                            <div class="">
+                                <div class="well well-sm col-md-12  clearfix">
+                                    <calendar ng-model="currentDate" calendar-mode="mode" event-source="eventSource" range-changed="reloadSource(startTime, endTime)" event-selected="onEventSelected(event)" time-selected="onTimeSelected(selectedTime, events)"></calendar>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 ">
+                                    <div class="information">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div> <b>Course Start Date:</b>
+                                                    <br/> {{selectedTime}}</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <b>Quantity:</b>
+                                                <input class="form-control input-sm" numbers-only='' ng-model="quantity" ng-change="EndDateValidator(quantity,currentDate)" placeholder="Enter quantity" type="text" maxlength="2" name="cvv" />
+                                            </div>
+                                            <div class="col-md-4" style="border: none">
+                                                <div><b>EndDate:</b>
+                                                    <br/> {{endDateProcessed}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="button" ng-click="submit()" ng-disabled="eventSource.length == 0 || eventSource.length == unde" class="zPrimary_btn" data-dismiss="modal">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="note-collection pull-right">
+                                        <div class="note"><span class="square-preferred"></span>
+                                            <label>Preferred</label>
+                                        </div>
+                                        <div class="note"><span class="square-available"></span>
+                                            <label>Available</label>
+                                        </div>
+                                        <div class="note"><span class="square-current"></span>
+                                            <label>Selected Date</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!--  <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                 </div> -->
+            </div>
+        </div>
+    </div>
+    <section class="container">
+    </section>
+    <div class="header-global">
+    </div>
+    <div class="container" style="margin-top: 15px;">
+        <apex:form >
+            <apex:actionFunction action="{!getSelectedLineItemStartdate}" name="opencalander" reRender="myModal" onComplete="angular.element(this).scope().reloadFilteredValue('{!startdateJSONString}','{!currentLineItemJSON}')" />
+            <div Id="popDiv" style="display: none">
+            </div>
+            <apex:outputPanel id="table2">
+                <div class="main-cart-container" style="background-color:white">
+                    <apex:outputPanel id="lineTb">
+                        <table id="tb1" class="table table-hover table-bordered">
+                            <!-- <thead class="cart-label-row">
+                                    <tr class="main-cart-header-row border-color__c"> </tr>
+                                    <tr class="main-cart-header-row border-color__c">
+                                        <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                            <div class="columnType">Select Line Item</div>
+                                        </th>
+                                        <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                            <div class="columnType">Is Beginner</div>
+                                        </th>
+                                        <apex:repeat value="{!$ObjectType.Apttus_Config2__LineItem__c.FieldSets.EditStartEndDateFieldSet}" var="f">
+                                            <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                                <div class="columnType">{!f.label}</div>
+                                            </th>
+                                        </apex:repeat>
+                                        <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                            <div class="columnType">Start Date</div>
+                                        </th>
+                                        <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                            <div class="columnType">Quantity</div>
+                                        </th>
+                                        <th class="main-cart-col main-cart-col--header  main-cart-col--detail">
+                                            <div class="columnType">End Date</div>
+                                        </th>
+                                    </tr>
+                                </thead> -->
+                            <thead>
+                            <tr style="background-color: #4492da; color: #fff">
+                                <th>Select Start Date</th>
+                                <th>Is Beginner</th>
+                                <apex:repeat value="{!$ObjectType.Apttus_Config2__LineItem__c.FieldSets.EditStartEndDateFieldSet}" var="f">
+                                    <th>
+                                            {!f.label}
+                                    </th>
+                                </apex:repeat>
+                                <th>Start Date</th>
+                                <th>Quantity</th>
+                                <th>End Date</th>
+                            </tr>
+                            </thead>
+                            <apex:repeat value="{!bundleWrapperList}" var="wrap">
+                                <tr class="line-item-row is--open">
+                                    <td class="main-cart-col main-cart-col--detail">
+                                        <div class="columnType" id="validateInput">
+                                            <apex:inputcheckbox onchange="angular.element(this).scope().cTrig(this.name)" value="{!wrap.selectedBundle}" rendered="{!wrap.lineItem.APTS_Product_Type__c == 'Course'}" />
+                                        </div>
+                                    </td>
+                                    <td class="main-cart-col main-cart-col--detail">
+                                        <div class="columnType" id="beginner">
+                                            <apex:inputcheckbox value="{!wrap.lineItem.Beginner__c}"   rendered="{!wrap.lineItem.APTS_Product_Type__c == 'Course'}" />
+                                        </div>
+                                    </td>
+                                    <apex:repeat value="{!$ObjectType.Apttus_Config2__LineItem__c.FieldSets.EditStartEndDateFieldSet}" var="f">
+                                        <td class="main-cart-col main-cart-col--detail">
+                                            <div class="columnType">
+                                                <b><apex:outputField value="{!wrap.lineItem[f.fieldPath]}"/></b>
+                                            </div>
+                                        </td>
+                                    </apex:repeat>
+
+                                    <td class="main-cart-col main-cart-col--detail">
+                                        <div class="columnType" id="startdate">
+                                            <!--onchangeStartDate-->
+                                            <apex:outputField value="{!wrap.lineItem.Apttus_Config2__StartDate__c}" rendered="{!IF(wrap.lineItem.APTS_Product_Type__c != 'Destination' && wrap.lineItem.APTS_Product_Type__c != 'Accommodation' && wrap.lineItem.APTS_QunatityModifiable__c == false,true,false)}" />
+                                            <apex:inputField type="date" onChange="angular.element(this).scope().onchangeStartDate('{!wrap.lineItem}',this)" value="{!wrap.lineItem.Apttus_Config2__StartDate__c}"  rendered="{!IF( (wrap.lineItem.APTS_Product_Type__c == 'Accommodation' || wrap.lineItem.APTS_QunatityModifiable__c == true) && wrap.lineItem.Apttus_Config2__Uom__c != 'Each',true,false)}"   />
+                                        </div>
+                                    </td>
+                                    <td class="main-cart-col main-cart-col&#45;&#45;detail">
+                                        <div class="columnType" id="quantity">
+
+                                            <apex:outputField value="{!wrap.lineItem.Apttus_Config2__Quantity__c}" rendered="{!IF(wrap.lineItem.APTS_Product_Type__c != 'Destination' && wrap.lineItem.APTS_Product_Type__c != 'Accommodation' && wrap.lineItem.APTS_QunatityModifiable__c == false ,true,false)}" />
+                                            <!--<apex:outputField value="{!wrap.lineItem.Apttus_Config2__Quantity__c}" rendered="{!wrap.lineItem.APTS_Product_Type__c != 'Destination'}" />-->
+                                            <apex:inputField type="number"  onChange="angular.element(this).scope().onchangeQtyAccom('{!wrap.lineItem}',this)" value="{!wrap.lineItem.Apttus_Config2__Quantity__c}" rendered="{!IF( (wrap.lineItem.APTS_Product_Type__c == 'Accommodation' || wrap.lineItem.APTS_QunatityModifiable__c == true) ,true,false)}" >
+
+                                            </apex:inputField>
+                                        </div>
+                                    </td>
+
+                                    <td class="main-cart-col main-cart-col&#45;&#45;detail">
+                                        <div class="columnType" id="outdate">
+
+                                            <apex:outputText value="{0,date,dd/MM/yyyy}"  rendered="{!wrap.lineItem.APTS_Product_Type__c != 'Accommodation'}">
+                                                <apex:param value="{!wrap.lineItem.Apttus_Config2__EndDate__c}" />
+                                            </apex:outputText>
+                                            <apex:inputField type="date" onChange="angular.element(this).scope().onchangeEndDate('{!wrap.lineItem}',this)" value="{!wrap.lineItem.Apttus_Config2__EndDate__c}"  rendered="{!wrap.lineItem.APTS_Product_Type__c == 'Accommodation'}"/>
+
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </apex:outputPanel>
+                </div>
+            </apex:outputPanel>
+            <!-- <apex:actionFunction name="backToCart"  action="{!doRedirect}" />-->
+            <!-- <apex:actionFunction name="Save" action="{!doRerefresh}" />-->
+        </apex:form>
+    </div>
+    <div  ui-view="displayActions">
+        <div >
+            <display-actions align="center" class="" position="bottom">
+                <div  >
+                    <button class="btn btn-default" onclick="angular.element(this).scope().backToCart()" type="button">
+                        <span>Back to Cart</span>
+                    </button>
+                    <button  class="btn btn-success" onclick="angular.element(this).scope().saveAccomDationDetails()" type="button">
+                        <span>Save</span>
+                    </button>
+                </div>
+            </display-actions>
+        </div>
+    </div>
+    <script>
+
+    </script>
+    <style type="text/css">
+
+        thead.cart-label-row {
+    font-size: .9rem;
+    color: #fff;
+    background: #0094d9;
+}
+        .selectedTab_highlight span {
+            font-weight: bold !important;
+        }
+        @media only screen and (min-width: 500px) {
+            .container {
+                margin-top: 45px;
+                padding: 5px 1% 5px 1%;
+            }
+        }
+
+        @media only screen and (min-width: 920px) {
+            .container {
+                margin-top: 35px;
+                padding: 0;
+            }
+        }
+
+
+        .border-color__c {
+            border-bottom: 1px solid #e3e3e3 !important;
+        }
+
+        .wrapper-dropdown-5 {
+            position: relative;
+            width: 190px;
+            margin: 0 auto;
+            padding: 12px 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            outline: none;
+            -webkit-transition: all 0.3s ease-out;
+            -moz-transition: all 0.3s ease-out;
+            -ms-transition: all 0.3s ease-out;
+            -o-transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out;
+        }
+
+        .wrapper-dropdown-5:after {
+            /* Little arrow */
+            content: "";
+            width: 0;
+            height: 0;
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            margin-top: -3px;
+            border-width: 6px 6px 0 6px;
+            border-style: solid;
+            border-color: #4cbeff transparent;
+        }
+
+        .wrapper-dropdown-5 .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+
+            /* Styles */
+            background: #fff;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-top: none;
+            border-bottom: none;
+            list-style: none;
+            transition: all 0.3s ease-out;
+
+            /* Hiding */
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .columnType {
+            height: 2.5rem;
+
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            width: auto !important;
+            text-align: left;
+        }
+
+        .modal-body {
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .cart-label-row th>div {
+            height: auto;
+            padding: 0;
+            white-space: nowrap;
+            font-size: 14px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        td.main-cart-col.main-cart-col--detail span {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 0;
+        }
+
+        .cart-header button {
+            font-size: 14px;
+        }
+         tbody > * {
+    font-size: 14px !important;
+}
+#validateInput input, #beginner input {
+    margin: 6px auto;
+}
+
+/* Absolute Center Spinner */
+.loadingEffect {
+  position: fixed;
+  z-index: 999;
+  height: 2em;
+  width: 2em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+/* Transparent Overlay */
+.loadingEffect:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.3);
+}
+
+/* :not(:required) hides these rules from IE9 and below */
+.loadingEffect:not(:required) {
+  /* hide "loading..." text */
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+.loadingEffect:not(:required):after {
+  content: '';
+  display: block;
+  font-size: 10px;
+  width: 1em;
+  height: 1em;
+  margin-top: -0.5em;
+  -webkit-animation: spinner 1500ms infinite linear;
+  -moz-animation: spinner 1500ms infinite linear;
+  -ms-animation: spinner 1500ms infinite linear;
+  -o-animation: spinner 1500ms infinite linear;
+  animation: spinner 1500ms infinite linear;
+  border-radius: 0.5em;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+  box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) -1.5em 0 0 0, rgba(0, 0, 0, 0.75) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+}
+
+/* Animation */
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+        </style>
+    </body>
+
+    </html>
+</apex:page>

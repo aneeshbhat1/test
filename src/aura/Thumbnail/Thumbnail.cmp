@@ -1,0 +1,35 @@
+<!--
+ - Created by Aneesh on 24-07-2017.
+ -->
+
+<aura:component description="Thumbnail">
+    <aura:attribute name="fileTitle" type="String"/>
+    <aura:attribute name="downloadURL" type="String"/>
+    <aura:attribute name="helpText" type="String"/>
+    <div class="slds-media slds-box slds-grow slds-m-around--medium">
+        <div class="slds-media__figure slds-medium-show">
+            <div class="slds-file slds-file_card" style="width: 10rem;">
+                <figure>
+                    <a href="{!v.downloadURL}" class="slds-image__crop slds-image__crop--16-by-9">
+                                    <span class="slds-image__icon slds-icon_container" title="pdf">
+                                        <lightning:icon iconName="doctype:excel" size="medium" alternativeText="Download"/>
+                                    </span>
+                    </a>
+                </figure>
+                <div class="slds-file__actions-menu">
+                    <a class="slds-button slds-button_icon slds-button_icon slds-button_icon-x-small"
+                       href="{!v.downloadURL}"
+                       title="Download">
+                        <lightning:icon iconName="utility:download" size="x-small" alternativeText="Download"/>
+                        <span class="slds-assistive-text">Download</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="slds-media__body">
+            <h3 class="slds-text-heading_small">{!v.fileTitle}</h3>
+            <p>{!v.helpText}</p>
+        </div>
+    </div>
+
+</aura:component>

@@ -1,0 +1,92 @@
+/**
+ * Created by Aneesh on 06-08-2017.
+ */
+.THIS .single {
+  width: 50%;
+}
+.THIS .demo-only {
+  display: none;
+}
+.THIS .uiInputTextArea {
+  width: 100%;
+}
+.THIS .slds-textarea {
+  overflow-x: hidden !important;
+  height: 48px;
+  resize: none;
+}
+.THIS .bg-brandColor {
+  color: rgb(112, 110, 107);
+  text-align: left;
+  font-size: .75rem;
+  border: none;
+}
+
+.THIS .custom_component {
+  position: relative;
+}
+.THIS .row_right_top {
+  position: absolute;
+  top: 5%;
+  right: 2%;
+  display: block;
+  z-index: 8;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  background: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.THIS .customLoaderTrue {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 9;
+  display: block;
+  overflow: hidden;
+  background: rgba(51, 51, 51, .1);
+  display: block !important;
+}
+.THIS  .slds-truncate p {
+  max-width: 100%;
+  text-overflow: ellipsis !important;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.THIS .log_a_call_heading {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .875rem;
+  color: rgb(22, 50, 92);
+  font-weight: 400;
+  letter-spacing: .0625em;
+}
+.THIS .revel_data {
+  font-size: .875rem;
+  font-weight: 400;
+  color: rgb(43, 40, 38);
+}
+.THIS .label_adj label {
+  margin-left: 0;
+  margin-right: 0;
+}
+/* .THIS .opportunityLogACallSplit label {
+    width: 50%;
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+.THIS .slds-form-element__control.slds-grow {
+    width: 50%;
+    float: left;
+}
+.THIS .cOpportunityLogACall .slds-form-element__help {
+    float: left;
+    margin-left: 50%;
+} */

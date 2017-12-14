@@ -1,0 +1,51 @@
+<!--
+ - Created by aneesh.bhat on 27-Jul-17.
+ -->
+
+<apex:page controller="ExcelImportController" id="UploadFilePage" docType="html-5.0" standardStylesheets="false">
+    <apex:slds />
+    <script>
+        //Receive message from LC
+        window.addEventListener("message", function(event) {
+            data = event.data;
+
+            if(typeof(event.data.uploadFile) != 'undefined' && (event.data.uploadFile == true)){
+                document.getElementById('{!$Component.theForm.uploadFileButton}').click();
+            }
+        }, false);
+
+        var lexOrigin = 'https://{!$CurrentPage.parameters.lcHost}';
+
+        //Data for Google map
+        var data;
+
+        //Send message to LC
+        function sendToLC(message) {
+            debugger;
+            if(typeof(lexOrigin) != 'undefined'){
+                parent.postMessage(message, lexOrigin);
+            }
+        }
+
+        sendToLC({'state':'LOADED', 'vfHost': "{!LEFT($CurrentPage.URL,FIND('/',$CurrentPage.URL,9))}"});
+
+    </script>
+
+    <apex:form id="theForm">
+        <apex:commandButton value="Save" action="{!uploadFile}" id="uploadFileButton" style="display:none;"/>
+        <apex:inputfile styleClass="slds-file-selector" id="fileSelectedForUpload" fileSize="{!fileSize}" contentType="{!contentType}" onChange="sendToLC({'state': 'uploadFileSelected'});" value="{!fileContent.VersionData}" filename="{!fileContent.Title}"></apex:inputfile>
+    </apex:form>
+
+    <apex:pageBlock rendered="{!fileUploadProcessed == true}" id="theBlock">
+        <script>
+            //Hide pageBlock as we just need it to run <script>
+            var theBlock = document.getElementById('{!$Component.theBlock}');
+            theBlock.style.border = 'none';
+            theBlock.style.display = 'none';
+
+            //Send file uploaded message
+            sendToLC({'state': 'fileUploadprocessed', 'message': '{!message}', 'messageType': '{!messageType}','fileId':'{!fileId}'});
+        </script>
+    </apex:pageBlock>
+
+</apex:page>

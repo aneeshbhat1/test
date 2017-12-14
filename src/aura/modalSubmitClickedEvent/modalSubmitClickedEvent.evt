@@ -1,0 +1,6 @@
+<!--
+ - Created by Archana on 09-09-2017.
+ -->
+
+<aura:event type="APPLICATION" description="modalSubmitClickedEvent">
+</aura:event>

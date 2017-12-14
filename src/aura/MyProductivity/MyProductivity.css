@@ -1,0 +1,36 @@
+.THIS {
+}
+.THIS .label{
+    font-weight: bolder;
+    padding-left: 25px;
+    padding-right: 12px;
+}
+.THIS .value{
+    padding-right: 10px;
+    font-size: large;
+}
+
+.THIS .completedTasks{
+    color: blueviolet;
+}
+.THIS .completedTasks svg{
+    fill: blueviolet;
+}
+.THIS .reachedTasks{
+    color: darkorange;
+}
+.THIS .reachedTasks svg{
+    fill: darkorange;
+}
+.THIS .weeksBooked{
+    color: yellowgreen;
+}
+.THIS .weeksBooked svg{
+    fill: yellowgreen;
+}
+.THIS .myLeads{
+    color: darkgoldenrod;
+}
+.THIS .myLeads svg{
+     fill: darkgoldenrod;
+ }

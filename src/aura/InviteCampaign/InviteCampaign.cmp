@@ -1,0 +1,328 @@
+<aura:component description="MarketComponent" controller="InviteCampaign"
+                implements="flexipage:availableForRecordHome,force:appHostable">
+    <aura:attribute name="markets" type="List"/>
+    <aura:attribute name="selectedMarket" type="String"/>
+    <aura:attribute name="selectedSalesOffice" type="String[]"/>
+    <aura:attribute name="selectedProduct" type="String"/>
+    <aura:attribute name="selectedMeetingType" type="String[]"/>
+    <aura:attribute name="selectedMeetingCity" type="String[]"/>
+    <aura:attribute name="selectedProgram" type="String[]"/>
+    <aura:attribute name="salesoffices" type="List"/>
+    <aura:attribute name="products" type="List"/>
+    <aura:attribute name="programs" type="List"/>
+    <aura:attribute name="initialData" type="object"/>
+    <aura:attribute name="meetingtypes" type="List"/>
+    <aura:attribute name="meetingcities" type="List"/>
+    <aura:attribute name="campaigns" type="campaign[]"/>
+    <aura:attribute name="selectedTo" type="Datetime"/>
+    <aura:attribute name="selectedfrom" type="Datetime"/>
+    <aura:attribute name="wrapperClassList" type="InviteCampaign.CampaignWrapper[]"/>
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="selectedItems" type="String[]"/>
+    <aura:attribute name="selectedMeetingTypes" type="String[]"/>
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="showMessage" type="Boolean"/>
+    <aura:attribute name="messageType" type="String"/>
+    <aura:attribute name="messageTitle" type="String"/>
+    <aura:method name="onInviteToCampaign" action="{!c.pushCampaigns}" access="PUBLIC"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:renderIf isTrue="{!v.showMessage}">
+        <ui:message title="{!v.messageTitle}" severity="{!v.messageType}" closable="true">{!v.message}
+        </ui:message>
+    </aura:renderIf>
+    <c:ExpandableSection >
+        <aura:set attribute="content">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-large-size_1-of-4 slds-p-around_medium slds-grid slds-wrap">
+                    <label class="slds-large-size_1-of-1" for="input-id-01">Sales Office</label>
+                    <div class="slds-large-size_1-of-1">
+                        <c:MultiSelect options="{!v.salesoffices}" selectedItems="{!v.selectedSalesOffice}"/>
+                    </div>
+                </div>
+
+                <div class="slds-large-size_1-of-4 slds-p-around_medium slds-grid slds-wrap">
+                    <label class="slds-large-size_1-of-1" for="input-id-01">Program</label>
+                    <div class="slds-large-size_1-of-1">
+                        <c:MultiSelect aura:id="programDropdown" options="{!v.programs}"
+                                       selectedItems="{!v.selectedProgram}"/>
+                    </div>
+                </div>
+
+                <div class="slds-large-size_1-of-4 slds-p-around_medium slds-grid slds-wrap">
+                    <label class="slds-large-size_1-of-1" for="input-id-01">Meeting Type</label>
+                    <div class="slds-large-size_1-of-1">
+                        <c:MultiSelect options="{!v.meetingtypes}" selectedItems="{!v.selectedMeetingType}"/>
+                    </div>
+                </div>
+
+                <div class="slds-large-size_1-of-4 slds-p-around_medium slds-grid slds-wrap">
+                    <label class="slds-large-size_1-of-1" for="input-id-01">Meeting City</label>
+                    <div class="slds-large-size_1-of-1">
+                        <c:MultiSelect options="{!v.meetingcities}" selectedItems="{!v.selectedMeetingCity}"/>
+                    </div>
+                </div>
+
+                <div class="slds-large-size_2-of-4 slds-form-element slds-hint-parent slds-form-element_edit">
+                    <div class="slds-p-around_medium">
+                        <ui:inputDateTime aura:id="selectedfrom" label="Meeting DateFrom" class="field"
+                                          value="{!v.selectedfrom}" displayDatePicker="true"/>
+                    </div>
+                </div>
+
+                <div class="slds-large-size_2-of-4 slds-form-element slds-hint-parent slds-form-element_edit">
+                    <div class="slds-p-around_medium">
+                        <ui:inputDateTime aura:id="selectedTo" label="Meeting DateTo" class="field"
+                                          value="{!v.selectedTo}" displayDatePicker="true"/>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-float_right slds-m-around_medium">
+                <button class="slds-button slds-button_neutral slds-grid--align-right" onclick="{!c.getCampaigns}" value="{!v.programs}">
+                    Filter Campaign
+                </button>
+            </div>
+        </aura:set>
+    </c:ExpandableSection>
+    <div class="slds-panel slds-is-editing">
+        <div class="slds-panel__section">
+            <table class="slds-table slds-table_bordered slds-table_resizable-cols campaignTable slds-table_striped" role="grid">
+                <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col" class="slds-text-align_right slds-large-size_1-of-10" style="width: 3.25rem;">
+                        <div class="slds-th__action slds-th__action_form">
+              <span class="slds-checkbox">
+                  <input type="checkbox" name="options" id="checkbox-9" value="on"/>
+                <label class="slds-checkbox__label" for="checkbox-9">
+                  <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                </label>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col" >
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Name">Name</span>
+                            <div class="slds-icon_container">
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-34" class="slds-assistive-text">Amount column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-34" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Program">Program</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-29" class="slds-assistive-text">Name column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-29" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Meeting City">Meeting City</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-30" class="slds-assistive-text">Account Name column
+                                width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-30" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Meeting Type">Meeting Type</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-31" class="slds-assistive-text">Close Date column
+                                width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-31" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Date From">Date From</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-32" class="slds-assistive-text">Stage column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-32" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Date To">Date To</span>
+                            <div class="slds-icon_container">
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-33" class="slds-assistive-text">Confidence column
+                                width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-33" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="IsUP">Is UP</span>
+                            <div class="slds-icon_container">
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-34" class="slds-assistive-text">Amount column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-34" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Meeting Size">Meeting Size</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-35" class="slds-assistive-text">Contact column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-35" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" scope="col">
+                        <a href="javascript:void(0);" class="slds-th__action slds-text-link_reset" tabindex="0">
+                            <span class="slds-assistive-text">Sort </span>
+                            <span class="slds-truncate" title="Invited">Invited</span>
+                            <div class="slds-icon_container">
+
+
+                            </div>
+                            <span class="slds-assistive-text" aria-live="assertive" aria-atomic="true"></span>
+                        </a>
+                        <div class="slds-resizable">
+                            <label for="cell-resize-handle-35" class="slds-assistive-text">Contact column width</label>
+                            <input type="range" min="20" max="1000" class="slds-resizable__input slds-assistive-text"
+                                   id="cell-resize-handle-35" tabindex="0"/>
+                            <span class="slds-resizable__handle">
+                <span class="slds-resizable__divider"></span>
+              </span>
+                        </div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <aura:iteration items="{!v.wrapperClassList}" var="wrapper" indexVar="row">
+                    <tr class="slds-hint-parent">
+                        <td role="gridcell">
+                            <ui:inputCheckbox value="{!wrapper.isChecked}"/>
+                        </td>
+                        <td role="gridcell">
+                            <div  title="Name" class="slds-truncate">{!wrapper.objWrapperCampaign.Name}</div>                           
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">{!wrapper.objWrapperCampaign.Program__c}</div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">{!wrapper.objWrapperCampaign.MeetingCity__c}</div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">{!wrapper.objWrapperCampaign.MeetingType__c}</div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">
+                                <ui:outputDateTime value="{!wrapper.objWrapperCampaign.DateFrom__c}"/>
+                            </div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">
+                                <ui:outputDateTime value="{!wrapper.objWrapperCampaign.DateTo__c}"/>
+                            </div>
+                        </td>
+
+                        <td role="gridcell">
+                            <div class="slds-truncate">{!wrapper.objWrapperCampaign.IsUP__c}</div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate">{!wrapper.objWrapperCampaign.MeetingSize__c}</div>
+                        </td>
+                        <td role="gridcell">
+                            <div class="slds-truncate"><ui:outputText value="{!wrapper.invitedCount}"/>
+                                    </div>
+                        </td>
+
+                    </tr>
+                </aura:iteration>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="demo-only slds-hide" style="height: 6rem;" aura:id="mySpinner">
+        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+</aura:component>
