@@ -1,0 +1,42 @@
+<!--
+ - Created by aneesh.bhat on 23-Nov-17.
+ -->
+
+<aura:component description="TemplateBuilder"
+                controller="TemplateBuilderApexController"
+                implements="flexipage:availableForRecordHome,force:appHostable">
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="selectedObject" type="String"/>
+    <aura:attribute name="serverURL" type="String"/>
+    <aura:attribute name="selectedRecord" type="String"/>
+    <aura:attribute name="records" type="SObject[]"/>
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-form-element slds-large-size_1-of-3 slds-p-around_small">
+                <label class="slds-form-element__label">Select Object</label>
+                <ui:inputSelect class="single"
+                                value="{!v.selectedObject}"
+                                change="{!c.onSelectedObjectChanged}">
+                    <ui:inputSelectOption label="Select" text=""/>
+                    <ui:inputSelectOption label="Lead" text="006"/>
+                    <ui:inputSelectOption label="Opportunity" text="00Q"/>
+                </ui:inputSelect>
+            </div>
+            <div class="slds-form-element slds-large-size_1-of-3 slds-p-around_small">
+                <label class="slds-form-element__label">Select the Record</label>
+                <ui:inputSelect class="single"
+                                disabled="{!v.selectedObject != ''?false:true}"
+                                value="{!v.selectedRecord}">
+                    <ui:inputSelectOption label="Select" text=""/>
+                    <aura:iteration items="{!v.records}" var="record">
+                        <ui:inputSelectOption text="{!record.Id}" label="{!record.Name}"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+            <div class="slds-form-element slds-large-size_1-of-3 slds-p-left_small slds-p-vertical_x-large">
+            <button class="slds-button slds-button_neutral " disabled="{!v.selectedRecord != ''?false:true}"
+                    onclick="{!c.ongenerateTemplateClicked}">Create Template</button>
+            </div>
+        </div>
+    </article>
+</aura:component>

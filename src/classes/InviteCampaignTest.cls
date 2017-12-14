@@ -52,15 +52,15 @@ private class InviteCampaignTest {
                   
 
             string programs = FieldUtilityClass.getFieldDependencies('Campaign','Product__c','Program__c').get(product[2])[2];
-            String salesOffices= FieldUtilityClass.getFieldDependencies('Campaign', 'Market__c', 'SalesOffice__c').get(market[1])[0];
+            String salesOffices= FieldUtilityClass.getFieldDependencies('Campaign', 'Market__c', 'SalesOffice__c').get(market[16])[0];
             system.debug('salesOffices>>>>'+salesOffices);
-            String meetingCity1 = FieldUtilityClass.getFieldDependencies('Campaign', 'Market__c', 'MeetingCity__c').get(market[0])[1];
+            String meetingCity1 = FieldUtilityClass.getFieldDependencies('Campaign', 'Market__c', 'MeetingCity__c').get(market[16])[0];
             DateTime dateAndTimee = DateTime.now();
 
             for (integer i = 0; i < 5; i++) {               
                 if((market[1] != '' && market[1] != null ) && ( product[2]!= '' && product[2]!= null) && ( meetingType[1] != '' && meetingType[1] != null) && ( salesOffices!='' && salesOffices!=null) && ( meetingCity1!= '' && meetingCity1!= null) && ( programs!= '' &&  programs!= null) && (meetingStatus!= '' && meetingStatus!= null)){
                 campaign campaignRecord = new campaign();
-                campaignRecord = TestDataUtil.createDynamicCampaigns(market[1],product[2], meetingType[1],salesOffices,meetingCity1,programs, meetingStatus,dateAndTime.addHours(4 + i), dateAndTime.addHours(5 + i) , 20, 'testCamp' + i);
+                campaignRecord = TestDataUtil.createDynamicCampaigns(market[16],product[2], meetingType[1],salesOffices,meetingCity1,programs, meetingStatus,dateAndTime.addHours(4 + i), dateAndTime.addHours(5 + i) , 20, 'testCamp' + i);
                 campaignList.add(campaignRecord);               
                 }
             }

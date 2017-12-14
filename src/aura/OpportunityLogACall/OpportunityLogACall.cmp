@@ -1,0 +1,279 @@
+<!--
+ - Created by Aneesh on 05-08-2017.
+ -->
+<aura:component description="OpportunityLogACall" controller="LogACallController" implements="flexipage:availableForRecordHome,force:appHostable,force:hasRecordId">
+	<aura:attribute name="salesAction" type="List" />
+	<aura:attribute name="likelihoodToBook" type="List" />
+	<aura:attribute name="hearAboutEF" type="List" />
+	<aura:attribute name="closeReasons" type="List" />
+	<aura:attribute name="callResults" type="List" />
+	<aura:attribute name="durations" type="List" />
+	<aura:attribute name="destinations" type="List" />
+	<aura:attribute name="programs" type="List" />
+	<aura:attribute name="subActions" type="List" />
+	<aura:attribute name="selectedActionType" type="String" />
+	<aura:attribute name="changedProgram" type="String" />
+	<aura:attribute name="selectedSubActionType" type="String" />
+	<aura:attribute name="selectedCallResult" type="String" />
+	<aura:attribute name="selectedLikelihoodToBook" type="String" />
+	<aura:attribute name="selectedCloseReason" type="String" />
+	<aura:attribute name="bookOnDate" type="Date" />
+	<aura:attribute name="years" type="String[]" />
+	<aura:attribute name="selectedActionDate" type="DateTime" />
+	<aura:attribute name="selectedVisitDate" type="DateTime" />
+	<aura:attribute name="message" type="String" />
+	<aura:attribute name="showMessage" type="Boolean" />
+	<aura:attribute name="messageType" type="String" />
+	<aura:attribute name="hearAboutEFValue" type="String" />
+	<aura:attribute name="messageTitle" type="String" />
+	<aura:attribute name="temporaryData" type="String" />
+	<aura:attribute name="destinationsSelected" type="String" />
+	<aura:attribute name="durationsSelected" type="String" />
+	<aura:attribute name="monthSelected" type="String" />
+	<aura:attribute name="yearSelected" type="String" />
+	<aura:attribute name="isCustomerReached" type="Boolean" />
+	<aura:attribute name="readOnlyToggle" type="Boolean" default="false" />
+	<aura:attribute name="customDataLoader" type="Boolean" default="false" />
+	<aura:attribute name="find_lead_or_opp" type="String" />
+	<!-- <aura:attribute name="zNationality" type="String" /> -->
+	<aura:attribute name="months" type="String[]" default="January,February,March,April,May,June,July,August,September,October,November,December" />
+	<aura:attribute name="saveText" type="String" />
+	<aura:handler name="init" aura:id="doInit" value="{!this}" action="{!c.doInit}" />
+	<div class="slds">
+		<div class="slds-panel slds-border_bottom slds-border_top slds-border_left slds-border_right" style="position: relative;">
+			<div class="demo-only" aura:id="loaderComp">
+				<div role="status" class="slds-spinner slds-spinner_medium">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+			<div class="slds-p-around_small slds-border_bottom">
+				<div class="slds-grid slds-wrap">
+					<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+						<h2 class="slds-truncate log_a_call_heading slds-p-left_x-small">LOG AN ACTION NOW</h2>
+						<!-- <lightning:input type="date" min="Date.now()" /> -->
+						<!-- <h1>{!v.find_lead_or_opp == '00Q' ? 'Save and Create Opportunity' : 'Save Action'}</h1> -->
+						<!-- - {!v.find_lead_or_opp}  {!v.find_lead_or_opp == '00Q'}  -->
+						<!-- <h1>isCurrentReached : {!v.isCustomerReached}</h1> 
+						<h1>readOnlyToggle : {!v.readOnlyToggle}</h1>
+						<h1>V: {!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == false}</h1>
+						<h1>E: {!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == true}</h1>
+						<h1>Condition Check</h1>
+						<p><b>{!(v.isCustomerReached == false) }</b></p>
+						<p>{!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == true}</p> -->
+					</div>
+					<!-- <div onclick="{!c.onEdit}" class="slds-p-horizontal_x_small slds-size_1-of-2 slds-text-align_right">Edit</div> --></div>
+			</div>
+			<div class="slds-panel__section slds-p-top_xxx-small slds-p-bottom_none">
+				<aura:renderIf isTrue="{!v.showMessage}">
+					<ui:message title="{!v.messageTitle}" severity="{!v.messageType}" closable="true">{!v.message} </ui:message>
+				</aura:renderIf>
+				<div class="slds-grid slds-wrap">
+					<div class="slds-grid slds-wrap slds-grid_pull-padded">
+						<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+							<!-- <label class="slds-large-size_2-of-4 slds-p-around_small slds-p-top_none" for="input-id-01">Opportunity Action</label> -->
+							<!-- <ui:inputSelect class="single slds-large-size_2-of-4 slds-p-around_small slds-p-top_none" value="{!v.selectedActionType}" change="{!c.onSalesActionChanged}" required="true">
+									<aura:iteration items="{!v.salesAction}" var="action">
+										<ui:inputSelectOption text="{!action}" label="{!action}" /> </aura:iteration>
+								</ui:inputSelect> -->
+							<div style="display:none">
+								<lightning:input aura:id="required" label="temporaryData" name="temporaryData" value="{!v.temporaryData}" /> </div>
+							<!-- <lightning:select name="zNationality" label="DUMMY-SHIVA-WORKING" value="{!v.zNationality}">
+								<option value="">Please Select</option>
+								<option value="afghan">Afghan</option>
+							</lightning:select> -->
+						</div>
+						<aura:if isTrue="{! (v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == true) || (v.isCustomerReached == false) }">
+							<lightning:select aura:id="required" disabled="{!(v.salesAction == 'null' || v.salesAction == '' || v.salesAction == 'undefined' || empty(v.salesAction) )}" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" label="Action" required="true" value="{!v.selectedActionType}" onchange="{!c.onSalesActionChanged}">
+								<option value="">Please select</option>
+								<aura:iteration items="{!v.salesAction}" var="action">
+									<ui:inputSelectOption text="{!action}" label="{!action}" /> </aura:iteration>
+							</lightning:select>
+						</aura:if>
+						<aura:if isTrue="{!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == false}">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-1 ">
+								<div class="custom_component">
+									<div class="row_right_top" onclick="{!c.onEdit}">
+										<lightning:icon size="x-small" iconName="utility:edit" class="icon_color_white" /> </div>
+									<div class="row_main">
+										<article class="slds-card bg-brandColor">
+											<div class="slds-grid slds-wrap slds-p-vertical_x-small border_brand_bottom ">
+												<div class="slds-size_1-of-4 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> Likelihood
+													<p class="revel_data">{!empty(v.selectedLikelihoodToBook) ? '--' : v.selectedLikelihoodToBook }</p>
+												</div>
+												<div class="slds-size_1-of-3 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> How did you hear?
+													<p class="revel_data">{! empty(v.hearAboutEFValue) ? '--' : v.hearAboutEFValue }</p>
+												</div>
+												<div class="slds-size_1-of-3 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> Destination
+													<p class="revel_data">{! empty(v.destinationsSelected) ? '--' : v.destinationsSelected }</p>
+												</div>
+											</div>
+											<div class="slds-grid slds-p-vertical_x-small slds-p-top_none">
+												<div class="slds-size_1-of-4 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> Duration
+													<p class="revel_data">{! empty(v.durationsSelected) ? '--' : v.durationsSelected }</p>
+												</div>
+												<div class="slds-size_1-of-3 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> When
+													<p class="revel_data">{! empty(v.yearSelected) ? '--' : v.yearSelected } - {! empty(v.monthSelected) ? '--' : v.monthSelected }</p>
+												</div>
+												<div class="slds-size_1-of-3 slds-truncate slds-p-around_small slds-p-top_none slds-p-bottom_none"> Will book on
+													<p class="revel_data">{! empty(v.bookOnDate) ? '--' : v.bookOnDate }</p>
+												</div>
+											</div>
+										</article>
+									</div>
+								</div>
+							</div>
+						</aura:if>
+						<aura:if isTrue="{!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == false}">
+							<lightning:select aura:id="required" disabled="{!(v.salesAction == 'null' || v.salesAction == '' || v.salesAction == 'undefined' || empty(v.salesAction) )}" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_small opportunityLogACallSplit" label="Action" required="true" value="{!v.selectedActionType}" onchange="{!c.onSalesActionChanged}">
+								<option value="">Please select</option>
+								<aura:iteration items="{!v.salesAction}" var="action">
+									<ui:inputSelectOption text="{!action}" label="{!action}" /> </aura:iteration>
+							</lightning:select>
+						</aura:if>
+						<aura:if isTrue="{!v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == false}">
+							<aura:if isTrue="{!v.selectedActionType == 'Call Not Reached'?true:false}">
+								<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+									<lightning:select disabled="{!(v.subActions == 'null' || v.subActions == '' || v.subActions == 'undefined' || empty(v.subActions) )}" aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" value="{!v.selectedSubActionType}" label="Call Not Reached Type" required="{! v.selectedActionType == 'Call Not Reached' ? true : false }">
+										<option value="">Please select</option>
+										<aura:iteration items="{!v.subActions}" var="subAction">
+											<ui:inputSelectOption text="{!subAction}" label="{!subAction}" /> </aura:iteration>
+									</lightning:select>
+								</div>
+							</aura:if>
+						</aura:if>
+						<aura:if isTrue="{! (v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == true) || (v.isCustomerReached == false) }">
+							<aura:if isTrue="{!v.selectedActionType == 'Call Not Reached'?true:false}">
+								<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+									<lightning:select disabled="{!(v.subActions == 'null' || v.subActions == '' || v.subActions == 'undefined' || empty(v.subActions) )}" aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" value="{!v.selectedSubActionType}" label="Call Not Reached Type" required="{! v.selectedActionType == 'Call Not Reached' ? true : false }">
+										<option value="">Please select</option>
+										<aura:iteration items="{!v.subActions}" var="subAction">
+											<ui:inputSelectOption text="{!subAction}" label="{!subAction}" /> </aura:iteration>
+									</lightning:select>
+								</div>
+							</aura:if>
+						</aura:if>
+						<aura:if isTrue="{! (v.isCustomerReached == true &amp;&amp; v.readOnlyToggle == true) || (v.isCustomerReached == false) }">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<aura:if isTrue="{!v.isCustomerReached}">
+									<lightning:select aura:id="required" disabled="{!(v.likelihoodToBook == 'null' || v.likelihoodToBook == '' || v.likelihoodToBook == 'undefined' || empty(v.likelihoodToBook) )}" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" value="{!v.selectedLikelihoodToBook}" label="Likelihood to book" required="{! (v.selectedActionType == 'Called Us' || v.selectedActionType == 'Call Reached' || v.selectedActionType == 'Visited Us' || v.selectedActionType == 'Emailed Us' || v.selectedActionType == 'Social Media Reached') ? true : false }">
+										<option value="">Please select</option>
+										<aura:iteration items="{!v.likelihoodToBook}" var="option">
+											<ui:inputSelectOption text="{!option}" label="{!option}" /> </aura:iteration>
+									</lightning:select>
+									<aura:set attribute="else">
+										<lightning:select aura:id="required" disabled="{!(v.likelihoodToBook == 'null' || v.likelihoodToBook == '' || v.likelihoodToBook == 'undefined' || empty(v.likelihoodToBook) )}" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" value="{!v.selectedLikelihoodToBook}" label="Likelihood to book" required="true">
+											<option value="">Please select</option>
+											<aura:iteration items="{!v.likelihoodToBook}" var="option">
+												<ui:inputSelectOption text="{!option}" label="{!option}" /> </aura:iteration>
+										</lightning:select>
+									</aura:set>
+								</aura:if>
+							</div>
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<lightning:select disabled="{!(v.hearAboutEF == 'null' || v.hearAboutEF == '' || v.hearAboutEF == 'undefined' || empty(v.hearAboutEF) )}" aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit label_adj" value="{!v.hearAboutEFValue}" label="How did you hear about EF?" required="{!v.selectedActionType == 'Call Reached'?true:false}">
+									<option value="">Please select</option>
+									<aura:iteration items="{!v.hearAboutEF}" var="option">
+										<ui:inputSelectOption text="{!option}" label="{!option}" /> </aura:iteration>
+								</lightning:select>
+							</div>
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<lightning:select value="{!v.destinationsSelected}" disabled="{!(v.destinations == 'null' || v.destinations == '' || v.destinations == 'undefined' || empty(v.destinations) )}" aura:id="marketDropdown" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" label="Destination">
+									<option value="">Please select</option>
+									<aura:iteration items="{!v.destinations}" var="destination">
+										<ui:inputSelectOption text="{!destination}" label="{!destination}" /> </aura:iteration>
+								</lightning:select>
+							</div>
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<lightning:select value="{!v.durationsSelected}" disabled="{!(v.durations == 'null' || v.durations == '' || v.durations == 'undefined' || empty(v.durations) )}" aura:id="marketDropdown" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" label="Duration">
+									<option value="">Please select</option>
+									<aura:iteration items="{!v.durations}" var="duration">
+										<ui:inputSelectOption text="{!duration}" label="{!duration}" /> </aura:iteration>
+								</lightning:select>
+							</div>
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<div class="slds-grid">
+									<div class="slds-size_1-of-2">
+										<lightning:select value="{!v.yearSelected}" aura:id="marketDropdown" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit slds-p-right_xxx-small" label="Year">
+											<option value="">Please select</option>
+											<aura:iteration items="{!v.years}" var="year">
+												<ui:inputSelectOption text="{!year}" label="{!year}" /> </aura:iteration>
+										</lightning:select>
+									</div>
+									<div class="slds-size_1-of-2">
+										<lightning:select value="{!v.monthSelected}" aura:id="marketDropdown" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" label="Month">
+											<option value="">Please select</option>
+											<aura:iteration items="{!v.months}" var="month">
+												<ui:inputSelectOption text="{!month}" label="{!month}" /> </aura:iteration>
+										</lightning:select>
+									</div>
+								</div>
+							</div>
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<!-- disabled="{!(v.bookOnDate == 'null' || v.bookOnDate == '' || v.bookOnDate == 'undefined' || empty(v.bookOnDate) )}" -->
+								<lightning:input type="date" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit pastdatesdisable" label="Will book on" min="Date.now()" value="{!v.bookOnDate}" name="bookOnDate" />
+								<!-- <label class="slds-large-size_4-of-4" style="font-size: 12px; margin-left: 12px;" for="input-id-01">Will book on</label> -->
+								<!-- <div class=" slds-large-size_4-of-4  slds-p-around_small slds-p-top_none slds-p-top_none">
+								<ui:inputDate class="form-control" displayDatePicker="true" value="{!v.bookOnDate}" /> </div> --></div>
+						</aura:if>
+						<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+							<lightning:textarea aura:id="comments" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit commentsArea" maxlength="9985" label="Comments" placeholder="Please enter comment here" /> </div>
+						<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+							<lightning:select aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" disabled="{!(v.selectedActionType == 'null' || v.selectedActionType == '' || v.selectedActionType == 'undefined' || empty(v.selectedActionType) || (v.selectedActionType != 'Select'?false:true) )}" label="Result/next action" required="true" value="{!v.selectedCallResult}">
+								<option value="">Please select</option>
+								<aura:iteration items="{!v.callResults}" var="callResult">
+									<ui:inputSelectOption text="{!callResult}" label="{!callResult}" /> </aura:iteration>
+							</lightning:select>
+						</div>
+						<aura:if isTrue="{!v.selectedCallResult == 'Change Program'? true : false}">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<lightning:select aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" label="Change Program" required="true" disabled="{!(v.programs == 'null' || v.programs == '' || v.programs == 'undefined' || empty(v.programs || (v.selectedActionType != 'Select'?false:true) ) )}" value="{!v.changedProgram}">
+									<option value="">Please select</option>
+									<aura:iteration items="{!v.programs}" var="program">
+										<ui:inputSelectOption text="{!program}" label="{!program}" /> </aura:iteration>
+								</lightning:select>
+							</div>
+						</aura:if>
+						<aura:if isTrue="{!v.selectedCallResult == 'Close'?true:false}">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-2">
+								<lightning:select aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" value="{!v.selectedCloseReason}" label="Close Reason" required="{!v.selectedCallResult == 'Close'?true:false}">
+									<option value="">Please select</option>
+									<aura:iteration items="{!v.closeReasons}" var="closeReason">
+										<ui:inputSelectOption text="{!closeReason}" label="{!closeReason}" /> </aura:iteration>
+								</lightning:select>
+							</div>
+						</aura:if>
+						<aura:if isTrue="{!v.selectedCallResult == 'Close'? false : true}">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+								<lightning:input aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" type="datetime-local" label="Action Date/Time" value="{!v.selectedActionDate}" disabled="{!v.selectedActionType != 'Select'?false:true}" required="{!v.selectedCallResult == 'Close'?false:true}" name="datetime" />
+								<!-- <label class="slds-large-size_4-of-4" style="font-size: 12px;margin-left: 12px;" for="input-id-01">Action time/date</label>
+							<div class=" slds-large-size_4-of-4 slds-p-around_small slds-p-top_none slds-p-top_none">
+								<ui:inputDateTime class="form-control" displayDatePicker="true" disabled="{!v.selectedActionType != 'Select'?false:true}" value="{!v.selectedActionDate}" />
+							</div> -->
+							</div>
+						</aura:if>
+						<aura:if isTrue="{!v.selectedCallResult == 'Visit'?true:false}">
+							<div class="slds-p-horizontal_x_small slds-size_1-of-1">
+								<lightning:input aura:id="required" class="slds-large-size_4-of-4 slds-p-around_small slds-p-top_none opportunityLogACallSplit" type="datetime-local" label="Visit Date/Time" value="{!v.selectedVisitDate}" disabled="{!v.selectedActionType != 'Select'?false:true}" required="{!v.selectedCallResult == 'Close'?false:true}" name="datetime" />
+								<!-- <label class="slds-large-size_4-of-4 " style="font-size: 12px;margin-left: 12px;" for="input-id-01">Visit Date/Time</label>
+								<div class=" slds-large-size_4-of-4 slds-p-around_small slds-p-top_none slds-p-top_none">
+									<ui:inputDateTime class="form-control" displayDatePicker="true" disabled="{!v.selectedActionType != 'Select'?false:true}" value="{!v.selectedVisitDate}" /> </div> -->
+							</div>
+						</aura:if>
+					</div>
+				</div>
+			</div>
+			<div class="slds-panel__section slds-grid">
+				<button class="slds-button slds-button_brand slds-p-right_xx-small slds-large-size_1-of-1" onclick="{!c.onSaveClicked}">
+					{!( (v.selectedActionType == 'Call Reached' &amp;&amp; v.selectedCallResult != 'Close' ) || v.selectedActionType == 'Called Us' || v.selectedActionType == 'Visited Us' || v.selectedActionType == 'Emailed Us' || v.selectedActionType == 'Social Media Reached') ? (v.find_lead_or_opp == '00Q' ? 'Save and Create Opportunity' : 'Save Action') : 'Save Action' } </button>
+			</div>
+		</div>
+	</div>
+</aura:component>
+<!-- Save Action
+Save and Create Opportunity 
+
+006
+00Q
+-->

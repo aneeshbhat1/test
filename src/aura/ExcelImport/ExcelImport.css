@@ -1,0 +1,40 @@
+/**
+ * Created by aneesh.bhat on 27-Jul-17.
+ */
+.THIS .vfFrame{
+    border: 1px dashed;
+    border-radius: 0.25rem;
+}
+.THIS.vfFrame .input[type="button"]{
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #d8dde6;
+    background-color: white;
+}
+.THIS.vfFrame .button_style_slds {
+          overflow: hidden;
+      }
+.THIS.vfFrame .button_style {
+    position: relative;
+}
+.THIS.vfFrame .button_style input {
+    opacity: 0;
+}
+.THIS.vfFrame .button_style .choose_file {
+    font-size: 14px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    border: 1px solid #d8dde6;
+}
+.THIS.vfFrame .button_style span {
+    font-size: 16px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    left: -10px;
+    top: 4px;
+}
