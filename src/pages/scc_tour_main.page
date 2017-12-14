@@ -1,0 +1,174 @@
+<apex:page >
+    <apex:stylesheet value="/apex/scc_tour_style"/>
+    <apex:includeScript value="/support/console/25.0/integration.js"/>
+    <script type="text/javascript">   
+        /***** Box Currently Showing Variable Controller *****/
+        var boxIsShowing = 0;
+        
+        /***** Set Tab Title Below In Single Quotes *****/
+        //sforce.console.getFocusedPrimaryTabId(function(result){
+        //  sforce.console.setTabTitle('Tour Agent Console', result.id);
+        //});
+        
+        /***** Function to Move Forward in Tour *****/
+        function tourNext(num){
+            var nextNum = num + 1;
+            document.getElementById('pop' + num).style.display="none";
+            document.getElementById('pop' + nextNum).style.display="block";
+        }
+        
+        /***** Function to Move Back in Tour *****/
+        function tourBack(num){
+            var backNum = num - 1;
+            document.getElementById('pop' + num).style.display="none";
+            document.getElementById('pop' + backNum).style.display="block";
+        }
+        
+        /***** Box Show Functionality *****/       
+        function showTour(num){
+            hideTour();
+            document.getElementById('pop' + num).style.display="block";
+            hoverIsOn = 0;
+        }
+        
+        /***** Hides All Boxes *****/
+        function hideTour(){
+            for(i = 1 ; i < 11 ; i++){
+                document.getElementById('pop' + i).style.display="none";
+            }
+        }
+    </script>
+    <body>
+        <div id="container">
+            <div id="content">
+                <!-- All Popup Information Boxes -->
+                
+                <!-- Welcome Box -->
+                <div id="pop1" class="popUps" style="">
+                    <h3>Herzlich Willkommen!</h3>
+                    <p>Willkommen bei der Tour zur Service Cloud-Konsole. Die Konsole ist für Ihre Mitarbeiter die primäre Schnittstelle für das Kundenvorgangsmanagement.</p>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=console2_about.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(1)">Weiter&nbsp;&#62;&#62;</a>
+                    <span class="" title=""></span>
+                </div>
+                <!-- Customer Information Box -->
+                <div id="pop2" class="popUps" style="">
+                    <h3>Hervorhebungsleiste: Kundendaten</h3>
+                    <p>Hier werden den Mitarbeitern wichtige Kundendaten angezeigt. Sie können alle Bereiche der Hervorhebungsleiste für Ihre geschäftlichen Zwecke anpassen.</p>
+                    <a href="" class="" onclick="tourBack(2)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=customize_layoutcustomize_highlights_panel_config.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(2)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">1/10</div>
+                    <span class="pointTop" title=""></span>
+                </div>
+                <!-- Case Summary Box -->
+                <div id="pop3" class="popUps" style="">
+                    <h3>Hervorhebungsleiste: Kundenvorgangszusammenfassung</h3>
+                    <p>In der Kundenvorgangszusammenfassung erhalten Ihre Mitarbeiter einen schnellen Überblick über den Kundenvorgang.</p>
+                    <a href="" class="" onclick="tourBack(3)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=customize_layoutcustomize_highlights_panel_config.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(3)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">2/10</div>
+                    <span class="pointTop" title=""></span>
+                </div>
+                <!-- Case Status Box -->
+                <div id="pop4" class="popUps" style="">
+                    <h3>Hervorhebungsleiste: Kundenvorgangsstatus</h3>
+                    <p>Anhand des Kundenvorgangsstatus erkennen die Mitarbeiter die Kundenvorgangspriorität und in welcher Bearbeitungsphase sich der Kundenvorgang befindet.</p>
+                    <a href="" class="" onclick="tourBack(4)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=customize_layoutcustomize_highlights_panel_config.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(4)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">3/10</div>
+                    <span class="pointTopRight" title=""></span>
+                </div>
+                <!-- Knowledge Box -->
+                <div id="pop5" class="popUps" style="">
+                    <h3>Knowledge</h3>
+                    <p>Knowledge sucht automatisch nach Antworten auf Mitarbeiterfragen, um einen raschen Abschluss eines Kundenvorgangs zu ermöglichen. So wird keine Zeit mit der Suche nach Antworten verschwendet.</p>
+                    <a href="" class="" onclick="tourBack(5)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=knowledge_whatis.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(5)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">4/10</div>
+                    <span class="pointRight" title=""></span>
+                </div>
+                <!-- Case Feed Box -->
+                <div id="pop6" class="popUps" style="">
+                    <h3>Kundenvorgangsfeed</h3>
+                    <p>Der Feed zeigt den Verlauf für diesen Kundenvorgang übergreifend über alle Kanäle in einem übersichtlichen Format an.</p>
+                    <a href="" class="" onclick="tourBack(6)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=case_interaction_overview.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(6)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">5/10</div>
+                    <span class="pointLeft" title=""></span>
+                </div>
+                <!-- Case Publisher Box -->
+                <div id="pop7" class="popUps" style="">
+                    <h3>Kundenvorgangsveröffentlichung</h3>
+                    <p>Die Kundenvorgangsveröffentlichung ist für die Mitarbeiter eine zentrale Stelle für die Beantwortung jeglicher Kundenvorgänge, unabhängig davon, ob sie per E-Mail, Telefon oder Internet eingegangen sind.</p>
+                    <a href="" class="" onclick="tourBack(7)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=case_interaction_overview.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(7)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">6/10</div>
+                    <span class="pointTop" title=""></span>
+                </div>
+                <!-- Feed Filters Box -->
+                <div id="pop8" class="popUps" style="">
+                    <h3>Feedfilter</h3>
+                    <p>Mithilfe der Feedfilter können Mitarbeiter spezifische Aktivitäten zu einem Kundenvorgang anzeigen, z. B. E-Mails, Anrufprotokolle oder Kundenvorgangsnotizen.</p>
+                    <a href="" class="" onclick="tourBack(8)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=case_interaction_overview.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(8)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">7/10</div>
+                    <span class="pointLeftBottom" title=""></span>
+                </div>
+                <!-- Publisher Actions Box -->
+                <div id="pop9" class="popUps" style="">
+                    <h3>Kundenvorgangsaktionen</h3>
+                    <p>Über die Kundenvorgangsaktion können Mitarbeiter für einen Kundenvorgang verschiedene Aktionen durchführen, z. B. eine interne Notiz schreiben oder den Status ändern.</p>
+                    <a href="" class="" onclick="tourBack(9)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=case_interaction_overview.htm&language=en_US" class="midLinks" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(9)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">8/10</div>
+                    <span class="pointTop" title=""></span>
+                </div>              
+                <!-- Primary Tabs Box -->                                               
+                <div id="pop10" class="popUps" style="">
+                    <h3>Primärregisterkarten</h3>
+                    <p>Mithilfe der Primärregisterkarten können Mitarbeiter an mehreren Kundenvorgängen gleichzeitig arbeiten. Sie bieten darüber hinaus weitere wichtige Informationen, beispielsweise relevante Account- und Kontaktdetails.</p>
+                    <a href="" class="" onclick="tourBack(10)">&#60;&#60;&nbsp;Zurück</a>
+                    <span>|</span>
+                    <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=console2_tabs.htm&language=en_US" target="_blank">Weitere Infos</a>
+                    <span>|</span>
+                    <a href="" class="" onclick="tourNext(10)">Weiter&nbsp;&#62;&#62;</a>
+                    <div class="tourNum">9/10</div>
+                    <span class="pointTop" title=""></span>
+                </div>
+            </div>
+        </div>
+        <!-- Close tab Box -->
+        <div id="pop11" class="popUps" style="">
+            <h3>Fertig!</h3>
+            <p>Nun haben Sie die Agentenkonsole näher kennengerlernt. Schließen Sie diese Registerkarte, um zur Registerkarte „Erste Schritte“ zurückzukehren und mehr über die Service Cloud zu erfahren.</p>
+            <a href="" class="" onclick="tourBack(11)">&#60;&#60;&nbsp;Zurück</a>
+            <div class="tourNum">10/10</div>
+            <span class="pointTop" title=""></span>
+        </div>
+    </body>
+</apex:page>

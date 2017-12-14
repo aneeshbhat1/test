@@ -1,0 +1,78 @@
+<apex:page sidebar="false" showHeader="false" docType="html-4.01-strict">
+    <style>
+        .noselect {
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Chrome/Safari/Opera */
+            -khtml-user-select: none; /* Konqueror */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+            /* Non-prefixed version, currently
+                                                     not supported by any browser */
+        }
+
+        .k-grouping-header {
+            display: none;
+        }
+    </style>
+    <div id="tabstrip" style="display:none;">
+        <ul>
+            <li class="k-state-active">Unassigned Opportunities</li>
+            <li>Assigned Opportunities</li>
+            <li>Unassigned Leads</li>
+            <li>Assigned Leads</li>
+        </ul>
+        <!-- Unassigned Opportunities -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Opportunity" DelayLoad="false" ViewID="a5I9E00000007cNUAQ"
+                          EnableNewButton="true" EnableNewInline="true" EnableEdit="true" EnableActions="true"
+                          EnableFieldChooser="true"
+                          EnableStickyViews="true" EnableToolbar="true" EnableViews="true" EnableFormatting="true"
+                          EnableReadingPane="true"/>
+            <CRMC_PP:DrillUp />
+        </div>
+
+        <!-- Assigned Opportunities -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Opportunity" DelayLoad="true" ViewID="a5I9E00000007cSUAQ"
+                          EnableNewButton="true" EnableNewInline="true" EnableEdit="true" EnableActions="true"
+                          EnableFieldChooser="true"
+                          EnableStickyViews="true" EnableToolbar="true" EnableViews="true" EnableFormatting="true"
+                          EnableReadingPane="true"/>
+            <CRMC_PP:DrillUp />
+        </div>
+
+        <!-- Unassigned Leads -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Lead" DelayLoad="true" ViewID="a5I9E00000007cXUAQ"
+                          EnableNewButton="true" EnableNewInline="true" EnableEdit="true" EnableActions="true"
+                          EnableFieldChooser="true"
+                          EnableStickyViews="true" EnableToolbar="true" EnableViews="true" EnableFormatting="true"
+                          EnableReadingPane="true"/>
+            <CRMC_PP:DrillUp />
+        </div>
+
+        <!-- Assigned Leads -->
+        <div style="overflow:hidden;">
+            <CRMC_PP:Grid ObjectName="Lead" DelayLoad="true" ViewID="a5I9E00000007ccUAA"
+                          EnableNewButton="true" EnableNewInline="true" EnableEdit="true" EnableActions="true"
+                          EnableFieldChooser="true"
+                          EnableStickyViews="true" EnableToolbar="true" EnableViews="true" EnableFormatting="true"
+                          EnableReadingPane="true"/>
+            <CRMC_PP:DrillUp />
+        </div>
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#tabstrip").kendoTabStrip({
+                activate: function (e) {
+                    setTimeout(function () {
+                        $(window).resize();
+                    });
+                }
+            });
+            $("#tabstrip").css("display", "block");
+        });
+    </script>
+</apex:page>
